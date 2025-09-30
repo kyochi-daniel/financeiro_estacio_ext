@@ -1,1 +1,5 @@
-export { useColorScheme } from 'react-native';
+
+export function useColorScheme(): 'light' | 'dark' | null {
+  // Forçar sempre o modo claro
+  return 'light';
+}
