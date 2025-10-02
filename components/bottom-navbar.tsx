@@ -1,7 +1,7 @@
+import { MaterialCommunityIcons } from '@expo/vector-icons';
+import { usePathname, useRouter } from 'expo-router';
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { useRouter, usePathname } from 'expo-router';
-import { MaterialCommunityIcons, Feather } from '@expo/vector-icons';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
 export function BottomNavbar() {
   const router = useRouter();

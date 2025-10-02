@@ -1,14 +1,13 @@
 import { Link } from 'expo-router';
 import React, { useState } from 'react';
 import {
-  FlatList,
-  StyleSheet,
-  View,
-  Modal,
-  TextInput,
-  TouchableOpacity,
-  Switch,
-  Platform,
+    FlatList,
+    Modal,
+    Platform,
+    StyleSheet,
+    TextInput,
+    TouchableOpacity,
+    View
 } from 'react-native';
 
 import { ThemedText } from '@/components/themed-text';
