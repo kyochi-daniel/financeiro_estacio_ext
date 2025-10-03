@@ -72,7 +72,7 @@ export default function TransactionsScreen() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView enableScroll={false} style={styles.container}>
       <ThemedText type="title" style={styles.title}>
         Movimentações
       </ThemedText>
