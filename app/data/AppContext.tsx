@@ -31,6 +31,8 @@ type AppData = {
   addTransaction: (tx: Transaction) => void;
   budgets: BudgetItem[];
   addBudget: (b: BudgetItem) => void;
+  updateBudget: (b: BudgetItem) => void;
+  removeBudget: (id: string) => void;
   inventory: InventoryItem[];
   updateInventory: (item: InventoryItem) => void;
 };
@@ -48,20 +50,56 @@ const INITIAL_INVENTORY: InventoryItem[] = [
   { id: 'lona', name: 'Lona 440g', quantity: 25, unit: 'm', reorderThreshold: 10 },
 ];
 
+const INITIAL_BUDGETS: BudgetItem[] = [
+  {
+    id: 'b1',
+    name: 'Banner 1x2m',
+    materialCost: 50,
+    inkCost: 25,
+    laborHours: 1,
+    laborRate: 25,
+    fixedAllocation: 0.05,
+    markupPercent: 40,
+  },
+  {
+    id: 'b2',
+    name: 'Flyer A4 (1000 un.)',
+    materialCost: 300,
+    inkCost: 120,
+    laborHours: 3,
+    laborRate: 20,
+    fixedAllocation: 0.02,
+    markupPercent: 30,
+  },
+  {
+    id: 'b3',
+    name: 'Cartaz 50x70',
+    materialCost: 40,
+    inkCost: 30,
+    laborHours: 1.5,
+    laborRate: 22,
+    fixedAllocation: 0.03,
+    markupPercent: 35,
+  },
+];
+
 const AppDataContext = createContext<AppData | undefined>(undefined);
 
 export const AppDataProvider = ({ children }: { children: React.ReactNode }) => {
   const [transactions, setTransactions] = useState<Transaction[]>(INITIAL_TRANSACTIONS);
-  const [budgets, setBudgets] = useState<BudgetItem[]>([]);
+  const [budgets, setBudgets] = useState<BudgetItem[]>(INITIAL_BUDGETS);
   const [inventory, setInventory] = useState<InventoryItem[]>(INITIAL_INVENTORY);
 
   const addTransaction = (tx: Transaction) => setTransactions((s) => [tx, ...s]);
   const addBudget = (b: BudgetItem) => setBudgets((s) => [b, ...s]);
+  const updateBudget = (b: BudgetItem) => setBudgets((s) => s.map((it) => (it.id === b.id ? b : it)));
+  const removeBudget = (id: string) => setBudgets((s) => s.filter((it) => it.id !== id));
   const updateInventory = (item: InventoryItem) =>
     setInventory((s) => s.map((it) => (it.id === item.id ? item : it)));
 
   return (
-    <AppDataContext.Provider value={{ transactions, addTransaction, budgets, addBudget, inventory, updateInventory }}>
+    <AppDataContext.Provider
+      value={{ transactions, addTransaction, budgets, addBudget, updateBudget, removeBudget, inventory, updateInventory }}>
       {children}
     </AppDataContext.Provider>
   );
