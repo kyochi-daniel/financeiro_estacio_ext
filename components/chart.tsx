@@ -1,5 +1,5 @@
 import React from 'react';
-import { Dimensions, View, Text, StyleSheet } from 'react-native';
+import { Dimensions, StyleSheet, Text, View } from 'react-native';
 
 // Tentamos carregar react-native-chart-kit se estiver disponível; caso contrário, usamos um fallback simples.
 let LineChart: any = null;

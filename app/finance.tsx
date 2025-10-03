@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppData, Transaction } from './data/AppContext';
+import React, { useState } from 'react';
+import { FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { Transaction, useAppData } from './data/AppContext';
 
 export default function FinancePage() {
   const { transactions, addTransaction } = useAppData();

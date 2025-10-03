@@ -2,9 +2,9 @@ import { Link } from 'expo-router';
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 
+import SmallLineChart from '@/components/chart';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import SmallLineChart from '@/components/chart';
 import { useAppData } from './data/AppContext';
 
 export default function HomePage() {

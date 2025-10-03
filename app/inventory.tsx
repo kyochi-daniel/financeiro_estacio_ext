@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { FlatList, StyleSheet, TextInput, TouchableOpacity, View, Modal, Platform, KeyboardAvoidingView } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppData, InventoryItem } from './data/AppContext';
+import React, { useState } from 'react';
+import { FlatList, KeyboardAvoidingView, Modal, Platform, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { InventoryItem, useAppData } from './data/AppContext';
 
 export default function InventoryPage() {
   const { inventory, updateInventory } = useAppData();

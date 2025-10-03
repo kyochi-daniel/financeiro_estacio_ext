@@ -1,9 +1,9 @@
-import React, { useMemo, useState } from 'react';
-import { StyleSheet, View, TextInput, TouchableOpacity, ScrollView } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useRouter } from 'expo-router';
+import React, { useMemo, useState } from 'react';
+import { ScrollView, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { useAppData } from './data/AppContext';
-import { Link, useRouter } from 'expo-router';
 
 function groupByMonth(transactions: any[]) {
   const map: Record<string, number> = {};

@@ -1,8 +1,8 @@
-import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { useAppData, BudgetItem } from './data/AppContext';
+import React, { useState } from 'react';
+import { StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import { BudgetItem, useAppData } from './data/AppContext';
 
 function calcFinalPrice(b: BudgetItem, totalFixedCosts: number) {
   // Calcula custo direto

@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Text } from 'react-native';
-import { ThemedView } from '@/components/themed-view';
 import { ThemedText } from '@/components/themed-text';
+import { ThemedView } from '@/components/themed-view';
+import React, { useState } from 'react';
+import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import { useAppData } from '../data/AppContext';
 
 // Import dinamicamente módulos do Expo quando disponíveis
