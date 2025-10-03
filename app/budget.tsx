@@ -1,8 +1,8 @@
-import React, { useMemo, useState } from 'react';
-import { Alert, FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
+import SmallLineChart from '@/components/chart';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import SmallLineChart from '@/components/chart';
+import React, { useMemo, useState } from 'react';
+import { Alert, FlatList, StyleSheet, TextInput, TouchableOpacity, View } from 'react-native';
 import { BudgetItem, useAppData } from './data/AppContext';
 
 function calcFinalPrice(b: BudgetItem, totalFixedCosts: number) {
