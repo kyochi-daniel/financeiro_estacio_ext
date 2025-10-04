@@ -163,7 +163,7 @@ export default function FinancePage() {
 const styles = StyleSheet.create({
   container: { flex: 1, padding: 20 },
   rowInputs: { flexDirection: 'row', gap: 8, marginTop: 10 },
-  input: { borderWidth: 1, borderColor: '#e6e6e6', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8 },
+  input: { borderWidth: 1, borderColor: '#e6e6e6', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 8, color: '#000' },
   toggle: { paddingHorizontal: 10, paddingVertical: 8, borderRadius: 8, borderWidth: 1, borderColor: '#e6e6e6', marginLeft: 6 },
   toggleActive: { backgroundColor: '#e6f6f2' },
   btn: { marginTop: 10, backgroundColor: '#0e8f76', paddingVertical: 12, borderRadius: 8, alignItems: 'center' },

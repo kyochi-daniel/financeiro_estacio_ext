@@ -36,6 +36,8 @@ export default function BudgetPage() {
 
   // formulário controlado
   const [form, setForm] = useState<BudgetItem>(emptyBudget());
+  // estado para permitir edição livre do campo "Valor sugerido" ao criar novo orçamento
+  const [priceInput, setPriceInput] = useState('');
 
   // Exemplo: total de custos fixos — em produção viria de config/centro de custos
   const totalFixedCosts = 5000;
@@ -46,22 +48,54 @@ export default function BudgetPage() {
   const openNew = () => {
     setForm(emptyBudget());
     setEditing(null);
+    setPriceInput('');
     setModalOpen(true);
   };
 
   const openEdit = (b: BudgetItem) => {
     setForm(b);
     setEditing(b);
+    // ao editar, preenche o campo de preço (caso o usuário queira ver)
+    setPriceInput(calcFinalPrice(b, totalFixedCosts).price.toFixed(2));
     setModalOpen(true);
   };
 
+  // previewPrice: se o usuário digitou um valor simples, usamos ele; caso contrário, usamos o cálculo padrão
+  const parsedPriceForPreview = priceInput && priceInput.trim()
+    ? parseFloat(priceInput.replace(/[^0-9.,]/g, '').replace(',', '.'))
+    : null;
+  const previewPrice = parsedPriceForPreview !== null && !Number.isNaN(parsedPriceForPreview)
+    ? parsedPriceForPreview
+    : calcFinalPrice(form, totalFixedCosts).price;
+
   const saveForm = () => {
-    if (!form.name.trim()) return Alert.alert('Validação', 'Informe um nome para o orçamento');
+    // Se estivermos criando (editing === null) permitimos nome vazio e geramos um nome padrão.
+    const toSave = { ...form } as BudgetItem;
+    if (!editing && !toSave.name.trim()) {
+      toSave.name = `Orçamento ${new Date().toLocaleDateString()}`;
+    }
+
+    // se o usuário digitou um priceInput, convertemos ao salvar
+    if (priceInput && priceInput.trim()) {
+      const parsed = parseFloat(priceInput.replace(/[^0-9.,]/g, '').replace(',', '.')) || 0;
+      const baseCost = toSave.materialCost + toSave.inkCost + toSave.laborHours * toSave.laborRate + totalFixedCosts * toSave.fixedAllocation;
+      if (baseCost > 0) {
+        // converte para markupPercent
+        const markup = ((parsed / baseCost) - 1) * 100;
+        toSave.markupPercent = isFinite(markup) ? Math.max(0, markup) : 0;
+      } else {
+        // sem custos base, guardamos o valor como materialCost (estratégia simples para preservar o valor)
+        toSave.materialCost = parsed;
+        toSave.markupPercent = 0;
+      }
+    }
 
     if (editing) {
-      updateBudget(form);
+      // validação mínima para edição: exigir nome
+      if (!toSave.name.trim()) return Alert.alert('Validação', 'Informe um nome para o orçamento');
+      updateBudget(toSave);
     } else {
-      addBudget({ ...form, id: Date.now().toString() });
+      addBudget({ ...toSave, id: Date.now().toString() });
     }
     setModalOpen(false);
   };
@@ -95,7 +129,8 @@ export default function BudgetPage() {
   };
 
   return (
-    <ThemedView style={styles.container}>
+    // disable internal scroll to avoid nesting VirtualizedList inside ScrollView
+    <ThemedView style={styles.container} enableScroll={false}>
       <ThemedText type="title">Orçamentos</ThemedText>
 
       <View style={styles.headerRow}>
@@ -121,70 +156,89 @@ export default function BudgetPage() {
           <View style={styles.modal}>
             <ThemedText type="title">{editing ? 'Editar' : 'Novo'} Orçamento</ThemedText>
 
+            {/* Se estivermos editando, mostramos o formulário completo; se for novo, simplificamos para um único input de valor */}
             <TextInput
               style={styles.input}
-              placeholder="Nome"
+              placeholder="Nome (opcional)"
               value={form.name}
               onChangeText={(v) => setForm({ ...form, name: v })}
             />
 
-            <View style={styles.row}>
-              <TextInput
-                style={[styles.input, styles.inputRow]}
-                placeholder="Custo material"
-                keyboardType="numeric"
-                value={String(form.materialCost)}
-                onChangeText={(v) => setForm({ ...form, materialCost: parseFloat(v) || 0 })}
-              />
-              <View style={{ width: 8 }} />
-              <TextInput
-                style={[styles.input, styles.inputRow]}
-                placeholder="Custo tinta"
-                keyboardType="numeric"
-                value={String(form.inkCost)}
-                onChangeText={(v) => setForm({ ...form, inkCost: parseFloat(v) || 0 })}
-              />
-            </View>
+            {editing ? (
+              <>
+                <View style={styles.row}>
+                  <TextInput
+                    style={[styles.input, styles.inputRow]}
+                    placeholder="Custo material"
+                    keyboardType="numeric"
+                    value={String(form.materialCost)}
+                    onChangeText={(v) => setForm({ ...form, materialCost: parseFloat(v) || 0 })}
+                  />
+                  <View style={{ width: 8 }} />
+                  <TextInput
+                    style={[styles.input, styles.inputRow]}
+                    placeholder="Custo tinta"
+                    keyboardType="numeric"
+                    value={String(form.inkCost)}
+                    onChangeText={(v) => setForm({ ...form, inkCost: parseFloat(v) || 0 })}
+                  />
+                </View>
 
-            <View style={styles.row}>
-              <TextInput
-                style={[styles.input, styles.inputRow]}
-                placeholder="Horas"
-                keyboardType="numeric"
-                value={String(form.laborHours)}
-                onChangeText={(v) => setForm({ ...form, laborHours: parseFloat(v) || 0 })}
-              />
-              <View style={{ width: 8 }} />
-              <TextInput
-                style={[styles.input, styles.inputRow]}
-                placeholder="Valor hora"
-                keyboardType="numeric"
-                value={String(form.laborRate)}
-                onChangeText={(v) => setForm({ ...form, laborRate: parseFloat(v) || 0 })}
-              />
-            </View>
+                <View style={styles.row}>
+                  <TextInput
+                    style={[styles.input, styles.inputRow]}
+                    placeholder="Horas"
+                    keyboardType="numeric"
+                    value={String(form.laborHours)}
+                    onChangeText={(v) => setForm({ ...form, laborHours: parseFloat(v) || 0 })}
+                  />
+                  <View style={{ width: 8 }} />
+                  <TextInput
+                    style={[styles.input, styles.inputRow]}
+                    placeholder="Valor hora"
+                    keyboardType="numeric"
+                    value={String(form.laborRate)}
+                    onChangeText={(v) => setForm({ ...form, laborRate: parseFloat(v) || 0 })}
+                  />
+                </View>
 
-            <View style={styles.row}>
-              <TextInput
-                style={[styles.input, styles.inputRow]}
-                placeholder="Alocação fixa (0-1)"
-                keyboardType="numeric"
-                value={String(form.fixedAllocation)}
-                onChangeText={(v) => setForm({ ...form, fixedAllocation: parseFloat(v) || 0 })}
-              />
-              <View style={{ width: 8 }} />
-              <TextInput
-                style={[styles.input, styles.inputRow]}
-                placeholder="Markup %"
-                keyboardType="numeric"
-                value={String(form.markupPercent)}
-                onChangeText={(v) => setForm({ ...form, markupPercent: parseFloat(v) || 0 })}
-              />
-            </View>
+                <View style={styles.row}>
+                  <TextInput
+                    style={[styles.input, styles.inputRow]}
+                    placeholder="Alocação fixa (0-1)"
+                    keyboardType="numeric"
+                    value={String(form.fixedAllocation)}
+                    onChangeText={(v) => setForm({ ...form, fixedAllocation: parseFloat(v) || 0 })}
+                  />
+                  <View style={{ width: 8 }} />
+                  <TextInput
+                    style={[styles.input, styles.inputRow]}
+                    placeholder="Markup %"
+                    keyboardType="numeric"
+                    value={String(form.markupPercent)}
+                    onChangeText={(v) => setForm({ ...form, markupPercent: parseFloat(v) || 0 })}
+                  />
+                </View>
+              </>
+            ) : (
+              // criação simples: apenas um campo para definir o preço sugerido (preenche markupPercent com base no preço)
+              <>
+                  <TextInput
+                    style={[styles.input, { marginTop: 10 }]}
+                    placeholder="Valor sugerido (R$)"
+                    keyboardType="numeric"
+                    value={priceInput}
+                    onChangeText={(v) => {
+                      // apenas atualiza o estado do input; o preview usa priceInput quando presente
+                      setPriceInput(v);
+                    }}
+                  />
+              </>
+            )}
 
             <View style={{ marginTop: 10 }}>
               <ThemedText type="subtitle">Preview</ThemedText>
-              <ThemedText>Preço: R$ {calcFinalPrice(form, totalFixedCosts).price.toFixed(2)}</ThemedText>
+              <ThemedText>Preço: R$ {previewPrice.toFixed(2)}</ThemedText>
             </View>
 
             <View style={styles.modalActions}>
